@@ -23,16 +23,23 @@ public class SavedRepositorySummary {
     @Column(name = "summary_text", nullable = false, columnDefinition = "text")
     private String summaryText;
 
+    @Column(name = "repository_data", columnDefinition = "text")
+    private String repositoryData;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean saved;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     protected SavedRepositorySummary() {
     }
 
-    public SavedRepositorySummary(AppUser user, String repositoryUrl, String summaryText) {
+    public SavedRepositorySummary(AppUser user, String repositoryUrl, String summaryText, String repositoryData) {
         this.user = user;
         this.repositoryUrl = repositoryUrl;
         this.summaryText = summaryText;
+        this.repositoryData = repositoryData;
     }
 
     @PrePersist
@@ -56,6 +63,18 @@ public class SavedRepositorySummary {
 
     public String getSummaryText() {
         return summaryText;
+    }
+
+    public String getRepositoryData() {
+        return repositoryData;
+    }
+
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 
     public Instant getCreatedAt() {

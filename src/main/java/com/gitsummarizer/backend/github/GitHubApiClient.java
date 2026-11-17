@@ -26,6 +26,7 @@ public class GitHubApiClient {
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, "application/vnd.github+json")
+                .defaultHeader(HttpHeaders.USER_AGENT, "GitSummarizer/1.0")
                 .defaultHeader("X-GitHub-Api-Version", API_VERSION)
                 .defaultHeaders(headers -> {
                     if (token != null && !token.isBlank()) {

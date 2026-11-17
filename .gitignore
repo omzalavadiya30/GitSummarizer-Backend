@@ -1,5 +1,9 @@
 ../../../../internship projects/GitSummarizer-Backend/HELP.md
 target/
+data/
+*.mv.db
+*.trace.db
+.env
 ../../../../internship projects/GitSummarizer-Backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

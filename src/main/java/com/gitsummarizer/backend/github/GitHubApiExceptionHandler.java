@@ -1,6 +1,7 @@
 package com.gitsummarizer.backend.github;
 
 import com.gitsummarizer.backend.ai.AiIntegrationException;
+import com.gitsummarizer.backend.auth.AuthException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 
@@ -42,6 +44,12 @@ public class GitHubApiExceptionHandler {
                         Instant.now()
                 )
         );
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ApiError> handleAuthFailure(AuthException exception) {
+        return ResponseEntity.status(exception.getStatus()).body(
+                new ApiError(exception.getCode(), exception.getMessage(), Instant.now()));
     }
 
     @ExceptionHandler(AiIntegrationException.class)
@@ -90,14 +98,22 @@ public class GitHubApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatus(ResponseStatusException exception) {
+        HttpStatus status = HttpStatus.valueOf(exception.getStatusCode().value());
+        String code = status == HttpStatus.NOT_FOUND ? "NOT_FOUND" : "REQUEST_REJECTED";
+        String message = exception.getReason() == null ? "The request could not be completed." : exception.getReason();
+        return ResponseEntity.status(status).body(new ApiError(code, message, Instant.now()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpectedFailure(
             Exception exception) {
         log.error("Unexpected error while processing API request", exception);
 
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ApiError(
-                        "UPSTREAM_ERROR",
+                        "INTERNAL_ERROR",
                         "The request could not be completed.",
                         Instant.now()
                 )
@@ -108,7 +124,7 @@ public class GitHubApiExceptionHandler {
         return ResponseEntity.badRequest().body(
                 new ApiError(
                         "INVALID_REQUEST",
-                        "Request body must contain a nonblank GitHub repository URL.",
+                        "Please check the fields in your request.",
                         Instant.now()
                 )
         );
