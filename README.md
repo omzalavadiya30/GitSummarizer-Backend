@@ -2,6 +2,10 @@
 
 Java 21 · Spring Boot 4 · Spring MVC REST API · Spring Data JPA · H2 or PostgreSQL.
 
+## Live application
+
+Frontend: <https://gitsummarizer-mauve.vercel.app/>
+
 ## Run locally
 
 Install JDK 21 and Maven 3.9+, then run:
